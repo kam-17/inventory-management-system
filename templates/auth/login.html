@@ -1,0 +1,86 @@
+{% extends "base/layout.html" %}
+
+{% block title %}Login - Inventory Management System{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10">
+    <div class="card w-full max-w-md shadow-2xl bg-base-100">
+        <div class="card-body">
+            <!-- Logo and Title -->
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-primary text-primary-content rounded-full mb-4">
+                    <i class="fas fa-boxes text-2xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-base-content">Inventory System</h1>
+                <p class="text-base-content/70">Sign in to your account</p>
+            </div>
+
+            <!-- Login Form -->
+            <form method="POST" action="{{ url_for('auth.login') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Username or Email</span>
+                    </label>
+                    <div class="relative">
+                        <input type="text" name="username" placeholder="Enter username or email" 
+                               class="input input-bordered w-full pl-10" required>
+                        <i class="fas fa-user absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/50"></i>
+                    </div>
+                </div>
+
+                <div class="form-control mt-4">
+                    <label class="label">
+                        <span class="label-text">Password</span>
+                    </label>
+                    <div class="relative">
+                        <input type="password" name="password" placeholder="Enter password" 
+                               class="input input-bordered w-full pl-10" required>
+                        <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/50"></i>
+                    </div>
+                </div>
+
+                <div class="form-control mt-4">
+                    <label class="label cursor-pointer justify-start gap-3">
+                        <input type="checkbox" name="remember_me" class="checkbox checkbox-primary" />
+                        <span class="label-text">Remember me</span>
+                    </label>
+                </div>
+
+                <div class="form-control mt-6">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        Sign In
+                    </button>
+                </div>
+            </form>
+
+            <!-- Additional Links -->
+            <div class="divider">Help</div>
+            <div class="text-center">
+                <p class="text-sm text-base-content/70">
+                    Need help? Contact your system administrator
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Login animation -->
+<style>
+.card {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+{% endblock %}

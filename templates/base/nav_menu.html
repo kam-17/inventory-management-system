@@ -1,0 +1,63 @@
+<!-- Navigation menu items based on user role -->
+{% if current_user.is_authenticated %}
+    <!-- Dashboard -->
+    <li><a href="{{ url_for('main.index') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+    
+    {% if current_user.can_access(['OFFICE', 'ADMIN', 'SUPER_ADMIN']) %}
+    <!-- DC Management -->
+    <li class="dropdown dropdown-hover">
+        <div tabindex="0" role="button" class="btn btn-ghost">
+            <i class="fas fa-truck"></i> DCs
+        </div>
+        <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 text-base-content">
+            <li><a href="#"><i class="fas fa-plus"></i> Create DC</a></li>
+            <li><a href="#"><i class="fas fa-list"></i> All DCs</a></li>
+            <li><a href="#"><i class="fas fa-clock"></i> Pending Close</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    
+    {% if current_user.can_access(['STORE', 'ADMIN', 'SUPER_ADMIN']) %}
+    <!-- Inventory -->
+    <li class="dropdown dropdown-hover">
+        <div tabindex="0" role="button" class="btn btn-ghost">
+            <i class="fas fa-boxes"></i> Inventory
+        </div>
+        <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 text-base-content">
+            <li><a href="#"><i class="fas fa-cubes"></i> Stock</a></li>
+            <li><a href="#"><i class="fas fa-arrow-down"></i> Inward</a></li>
+            <li><a href="#"><i class="fas fa-arrow-up"></i> Outward</a></li>
+            <li><a href="#"><i class="fas fa-exchange-alt"></i> Movements</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    
+    {% if current_user.can_access(['SERVICE_ENTRY', 'STORE', 'ADMIN', 'SUPER_ADMIN']) %}
+    <!-- DG Sets -->
+    <li class="dropdown dropdown-hover">
+        <div tabindex="0" role="button" class="btn btn-ghost">
+            <i class="fas fa-cog"></i> DG Sets
+        </div>
+        <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 text-base-content">
+            <li><a href="#"><i class="fas fa-list"></i> All DG Sets</a></li>
+            <li><a href="#"><i class="fas fa-wrench"></i> Service Logs</a></li>
+            {% if current_user.can_access(['ADMIN', 'SUPER_ADMIN']) %}
+            <li><a href="#"><i class="fas fa-plus"></i> Add DG Set</a></li>
+            {% endif %}
+        </ul>
+    </li>
+    {% endif %}
+    
+    <!-- Reports -->
+    <li class="dropdown dropdown-hover">
+        <div tabindex="0" role="button" class="btn btn-ghost">
+            <i class="fas fa-chart-bar"></i> Reports
+        </div>
+        <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 text-base-content">
+            <li><a href="#"><i class="fas fa-file-alt"></i> DC Reports</a></li>
+            <li><a href="#"><i class="fas fa-warehouse"></i> Stock Reports</a></li>
+            <li><a href="#"><i class="fas fa-chart-line"></i> Usage Reports</a></li>
+            <li><a href="#"><i class="fas fa-download"></i> Export Data</a></li>
+        </ul>
+    </li>
+{% endif %}

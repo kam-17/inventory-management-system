@@ -1,0 +1,199 @@
+{% extends "base/layout.html" %}
+
+{% block title %}Admin Dashboard - Inventory Management System{% endblock %}
+
+{% block authenticated_content %}
+<div class="space-y-6">
+    <!-- Page Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-base-content">Admin Dashboard</h1>
+            <p class="text-base-content/70 mt-1">System overview and management tools</p>
+        </div>
+        <div class="text-right">
+            <p class="text-sm text-base-content/70">Welcome back,</p>
+            <p class="text-lg font-semibold text-base-content">{{ current_user.get_full_name() }}</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+        <div class="stat bg-primary text-primary-content rounded-lg">
+            <div class="stat-figure">
+                <i class="fas fa-users text-2xl"></i>
+            </div>
+            <div class="stat-title text-primary-content/70">Total Users</div>
+            <div class="stat-value">{{ stats.total_users }}</div>
+        </div>
+
+        <div class="stat bg-secondary text-secondary-content rounded-lg">
+            <div class="stat-figure">
+                <i class="fas fa-building text-2xl"></i>
+            </div>
+            <div class="stat-title text-secondary-content/70">Sites</div>
+            <div class="stat-value">{{ stats.total_sites }}</div>
+        </div>
+
+        <div class="stat bg-accent text-accent-content rounded-lg">
+            <div class="stat-figure">
+                <i class="fas fa-cubes text-2xl"></i>
+            </div>
+            <div class="stat-title text-accent-content/70">Materials</div>
+            <div class="stat-value">{{ stats.total_materials }}</div>
+        </div>
+
+        <div class="stat bg-info text-info-content rounded-lg">
+            <div class="stat-figure">
+                <i class="fas fa-cog text-2xl"></i>
+            </div>
+            <div class="stat-title text-info-content/70">DG Sets</div>
+            <div class="stat-value">{{ stats.total_dg_sets }}</div>
+        </div>
+
+        <div class="stat bg-warning text-warning-content rounded-lg">
+            <div class="stat-figure">
+                <i class="fas fa-truck text-2xl"></i>
+            </div>
+            <div class="stat-title text-warning-content/70">Active DCs</div>
+            <div class="stat-value">{{ stats.active_dcs }}</div>
+        </div>
+
+        <div class="stat bg-error text-error-content rounded-lg">
+            <div class="stat-figure">
+                <i class="fas fa-exclamation-triangle text-2xl"></i>
+            </div>
+            <div class="stat-title text-error-content/70">Low Stock</div>
+            <div class="stat-value">{{ stats.low_stock_items }}</div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <!-- Low Stock Alert -->
+        {% if low_stock_materials %}
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title text-error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Low Stock Alert
+                </h2>
+                <div class="space-y-2">
+                    {% for item in low_stock_materials %}
+                    <div class="flex justify-between items-center p-2 bg-error/10 rounded">
+                        <div>
+                            <p class="font-medium">{{ item.material.material_name }}</p>
+                            <p class="text-sm text-base-content/70">{{ item.material.material_code }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-error font-bold">{{ item.current_stock }} {{ item.material.unit_of_measure }}</p>
+                            <p class="text-xs text-base-content/70">Min: {{ item.min_level }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="card-actions justify-end">
+                    <a href="{{ url_for('admin.materials') }}" class="btn btn-error btn-sm">View All</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Recent DCs -->
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title">
+                    <i class="fas fa-truck"></i>
+                    Recent DCs
+                </h2>
+                <div class="space-y-2">
+                    {% for dc in recent_dcs %}
+                    <div class="flex justify-between items-center p-2 bg-base-200 rounded">
+                        <div>
+                            <p class="font-medium">{{ dc.get_dc_display_number() }}</p>
+                            <p class="text-sm text-base-content/70">{{ dc.site.site_name }}</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="badge badge-{{ 'success' if dc.status.value == 'CLOSED' else ('warning' if dc.status.value == 'PENDING_CLOSE' else 'info') }}">
+                                {{ dc.status.value }}
+                            </span>
+                            <p class="text-xs text-base-content/70">{{ dc.created_at.strftime('%d/%m/%Y') }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- User Role Distribution -->
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title">
+                    <i class="fas fa-users"></i>
+                    User Distribution
+                </h2>
+                <div class="space-y-3">
+                    {% for role, count in role_distribution.items() %}
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-medium">{{ role.replace('_', ' ').title() }}</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-bold">{{ count }}</span>
+                            <div class="w-16 bg-base-300 rounded-full h-2">
+                                <div class="bg-primary h-2 rounded-full" style="width: {{ (count / stats.total_users * 100) if stats.total_users > 0 else 0 }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="card-actions justify-end">
+                    <a href="{{ url_for('admin.users') }}" class="btn btn-primary btn-sm">Manage Users</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">
+                <i class="fas fa-bolt"></i>
+                Quick Actions
+            </h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <a href="{{ url_for('admin.users') }}" class="btn btn-outline">
+                    <i class="fas fa-users"></i>
+                    Manage Users
+                </a>
+                <a href="{{ url_for('admin.sites') }}" class="btn btn-outline">
+                    <i class="fas fa-building"></i>
+                    Manage Sites
+                </a>
+                <a href="{{ url_for('admin.materials') }}" class="btn btn-outline">
+                    <i class="fas fa-cubes"></i>
+                    Manage Materials
+                </a>
+                <a href="{{ url_for('admin.dgsets') }}" class="btn btn-outline">
+                    <i class="fas fa-cog"></i>
+                    Manage DG Sets
+                </a>
+                <a href="#" class="btn btn-outline">
+                    <i class="fas fa-chart-bar"></i>
+                    Reports
+                </a>
+                <a href="#" class="btn btn-outline">
+                    <i class="fas fa-cogs"></i>
+                    Settings
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-refresh dashboard every 5 minutes
+setTimeout(() => {
+    location.reload();
+}, 300000);
+</script>
+{% endblock %}

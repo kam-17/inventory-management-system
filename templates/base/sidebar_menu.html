@@ -1,0 +1,180 @@
+<!-- Sidebar menu based on user role -->
+<ul class="menu p-2 text-base-content">
+    <!-- Dashboard -->
+    <li class="menu-title">
+        <span>Main</span>
+    </li>
+    <li>
+        <a href="{{ url_for('main.index') }}" class="flex items-center">
+            <i class="fas fa-tachometer-alt w-5"></i>
+            Dashboard
+        </a>
+    </li>
+    
+    {% if current_user.can_access(['OFFICE', 'ADMIN', 'SUPER_ADMIN']) %}
+    <!-- DC Management -->
+    <li class="menu-title">
+        <span>Delivery Challans</span>
+    </li>
+    <li>
+        <details>
+            <summary class="flex items-center">
+                <i class="fas fa-truck w-5"></i>
+                DC Management
+            </summary>
+            <ul>
+                <li><a href="#"><i class="fas fa-plus w-4"></i> Create DC</a></li>
+                <li><a href="#"><i class="fas fa-list w-4"></i> All DCs</a></li>
+                <li><a href="#"><i class="fas fa-clock w-4"></i> Pending Close</a></li>
+                <li><a href="#"><i class="fas fa-file-pdf w-4"></i> Generate PDF</a></li>
+            </ul>
+        </details>
+    </li>
+    {% endif %}
+    
+    {% if current_user.can_access(['STORE', 'ADMIN', 'SUPER_ADMIN']) %}
+    <!-- Inventory Management -->
+    <li class="menu-title">
+        <span>Inventory</span>
+    </li>
+    <li>
+        <details>
+            <summary class="flex items-center">
+                <i class="fas fa-boxes w-5"></i>
+                Stock Management
+            </summary>
+            <ul>
+                <li><a href="{{ url_for('store.inventory') }}"><i class="fas fa-cubes w-4"></i> Current Stock</a></li>
+                <li><a href="#"><i class="fas fa-arrow-down w-4"></i> Inward Entry</a></li>
+                <li><a href="#"><i class="fas fa-arrow-up w-4"></i> Outward Entry</a></li>
+                <li><a href="{{ url_for('store.movements') }}"><i class="fas fa-exchange-alt w-4"></i> Movements</a></li>
+                <li><a href="#"><i class="fas fa-exclamation-triangle w-4"></i> Low Stock</a></li>
+            </ul>
+        </details>
+    </li>
+    
+    <li>
+        <details>
+            <summary class="flex items-center">
+                <i class="fas fa-shipping-fast w-5"></i>
+                Dispatch & Returns
+            </summary>
+            <ul>
+                <li><a href="{{ url_for('store.dispatch') }}"><i class="fas fa-truck-loading w-4"></i> Dispatch DCs</a></li>
+                <li><a href="{{ url_for('store.returns') }}"><i class="fas fa-undo w-4"></i> Process Returns</a></li>
+            </ul>
+        </details>
+    </li>
+    {% endif %}
+    
+    {% if current_user.can_access(['SERVICE_ENTRY', 'STORE', 'ADMIN', 'SUPER_ADMIN']) %}
+    <!-- DG Set Management -->
+    <li class="menu-title">
+        <span>DG Sets</span>
+    </li>
+    <li>
+        <details>
+            <summary class="flex items-center">
+                <i class="fas fa-cog w-5"></i>
+                DG Set Management
+            </summary>
+            <ul>
+                <li><a href="{{ url_for('service.dg_sets') }}"><i class="fas fa-list w-4"></i> All DG Sets</a></li>
+                <li><a href="{{ url_for('service.service_logs') }}"><i class="fas fa-wrench w-4"></i> Service Logs</a></li>
+                <li><a href="{{ url_for('service.my_services') }}"><i class="fas fa-user-cog w-4"></i> My Services</a></li>
+                {% if current_user.can_access(['ADMIN', 'SUPER_ADMIN']) %}
+                <li><a href="#"><i class="fas fa-plus w-4"></i> Add DG Set</a></li>
+                {% endif %}
+            </ul>
+        </details>
+    </li>
+    {% endif %}
+    
+    {% if current_user.can_access(['ADMIN', 'SUPER_ADMIN']) %}
+    <!-- Master Data -->
+    <li class="menu-title">
+        <span>Master Data</span>
+    </li>
+    <li>
+        <details>
+            <summary class="flex items-center">
+                <i class="fas fa-database w-5"></i>
+                Masters
+            </summary>
+            <ul>
+                <li><a href="{{ url_for('admin.sites') }}"><i class="fas fa-building w-4"></i> Sites</a></li>
+                <li><a href="{{ url_for('admin.materials') }}"><i class="fas fa-cubes w-4"></i> Materials</a></li>
+                <li><a href="#"><i class="fas fa-tags w-4"></i> Categories</a></li>
+                <li><a href="{{ url_for('admin.dgsets') }}"><i class="fas fa-cog w-4"></i> DG Sets</a></li>
+                {% if current_user.has_role('SUPER_ADMIN') %}
+                <li><a href="{{ url_for('admin.users') }}"><i class="fas fa-users w-4"></i> Users</a></li>
+                {% endif %}
+            </ul>
+        </details>
+    </li>
+    {% endif %}
+    
+    <!-- Reports -->
+    <li class="menu-title">
+        <span>Reports</span>
+    </li>
+    <li>
+        <details>
+            <summary class="flex items-center">
+                <i class="fas fa-chart-bar w-5"></i>
+                Reports & Analytics
+            </summary>
+            <ul>
+                <li><a href="#"><i class="fas fa-file-alt w-4"></i> DC Reports</a></li>
+                <li><a href="#"><i class="fas fa-warehouse w-4"></i> Stock Reports</a></li>
+                <li><a href="#"><i class="fas fa-chart-line w-4"></i> Usage Reports</a></li>
+                <li><a href="#"><i class="fas fa-download w-4"></i> Export Data</a></li>
+                <li><a href="#"><i class="fas fa-envelope w-4"></i> Email Reports</a></li>
+            </ul>
+        </details>
+    </li>
+    
+    {% if current_user.has_role('SUPER_ADMIN') %}
+    <!-- Super Admin -->
+    <li class="menu-title">
+        <span>Super Admin</span>
+    </li>
+    <li>
+        <details>
+            <summary class="flex items-center">
+                <i class="fas fa-shield-alt w-5"></i>
+                System Admin
+            </summary>
+            <ul>
+                <li><a href="#"><i class="fas fa-key w-4"></i> OTP Management</a></li>
+                <li><a href="#"><i class="fas fa-history w-4"></i> Audit Logs</a></li>
+                <li><a href="#"><i class="fas fa-unlock w-4"></i> System Override</a></li>
+                <li><a href="#"><i class="fas fa-users-cog w-4"></i> User Management</a></li>
+            </ul>
+        </details>
+    </li>
+    {% endif %}
+    
+    <!-- Settings -->
+    <li class="menu-title">
+        <span>Settings</span>
+    </li>
+    <li>
+        <a href="{{ url_for('auth.profile') }}" class="flex items-center">
+            <i class="fas fa-user w-5"></i>
+            Profile
+        </a>
+    </li>
+    <li>
+        <a href="{{ url_for('auth.change_password') }}" class="flex items-center">
+            <i class="fas fa-key w-5"></i>
+            Change Password
+        </a>
+    </li>
+    <li>
+        <a href="{{ url_for('main.help') }}" class="flex items-center">
+            <i class="fas fa-question-circle w-5"></i>
+            Help
+        </a>
+    </li>
+</ul>
